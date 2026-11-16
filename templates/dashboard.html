@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Waste Collection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Plotly & Leaflet -->
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='leaflet/leaflet.css') }}"
+    />
+
+    <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      #navbar {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      #navbar .title {
+        font-size: 18px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+      }
+
+      #navbar .title span {
+        margin-left: 8px;
+      }
+
+      #navbar a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      #main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+      }
+
+      #left-panel {
+        width: 50%;
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #ddd;
+      }
+
+      #graph {
+        min-height: 500px;
+        flex-shrink: 0;
+        padding-top: 10px;
+        /* Added padding to prevent overlap */
+      }
+
+      #dispatch-container {
+        padding: 10px;
+        border-top: 1px solid #ccc;
+        background-color: #f0f9f0;
+        flex-shrink: 0;
+      }
+
+      #dispatch-container h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        color: #1c6f1c;
+        font-size: 16px;
+      }
+
+      #dispatch-info {
+        padding: 10px;
+        background-color: #f0f9f0;
+        font-size: 14px;
+        font-family: monospace;
+        line-height: 1.5;
+        overflow-y: auto;
+        max-height: 300px;
+        white-space: pre-wrap;
+        color: #222;
+        border: 1px solid #ccc;
+      }
+
+      #map {
+        width: 50%;
+        height: 100%;
+      }
+
+      .nav {
+        display: flex;
+        gap: 12px;
+      }
+
+      .nav > a {
+        font-weight: bolder;
+      }
+
+      @media (max-width: 768px) {
+        #main-content {
+          flex-direction: column;
+        }
+
+        #left-panel,
+        #map {
+          width: 100%;
+          height: 50%;
+        }
+
+        #dispatch-info {
+          max-height: 150px;
+          font-size: 12px;
+        }
+
+        .nav {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .nav a {
+          align-self: center;
+        }
+      }
+
+      .alert {
+        padding: 10px;
+        margin: 10px;
+        font-weight: bold;
+        border-radius: 4px;
+        border: 1px solid;
+      }
+
+      .alert-success {
+        background-color: #e6ffe6;
+        border-color: green;
+        color: green;
+      }
+
+      .alert-error,
+      .alert-danger {
+        background-color: #ffe6e6;
+        border-color: red;
+        color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Top Nav -->
+    <div id="navbar">
+      <div class="title">
+        ♻️<span>Smart Waste Collection - Graph View</span>
+      </div>
+      <div class="nav">
+        <a href="{{ url_for('moving_truck') }}">Direction</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div id="alerts">
+      {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+      {% endif %} {% if success %}
+      <div class="alert alert-success">{{ success }}</div>
+      {% endif %} {% with messages = get_flashed_messages(with_categories=true)
+      %} {% for category, msg in messages %}
+      <div class="alert alert-{{ category }}">{{ msg }}</div>
+      {% endfor %} {% endwith %}
+    </div>
+
+    <!-- Dual Panel Layout -->
+    <div id="main-content">
+      <div id="left-panel">
+        <div id="graph"></div>
+
+        <div id="dispatch-container">
+          <h3>🚛 Truck Dispatch Info</h3>
+          <div id="dispatch-info">Loading dispatch info...</div>
+        </div>
+      </div>
+
+      <div id="map"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <script>
+      setTimeout(() => {
+        document.querySelectorAll(".alert").forEach((el) => {
+          el.style.transition = "opacity 0.5s ease";
+          el.style.opacity = "0";
+          setTimeout(() => (el.style.display = "none"), 500);
+        });
+      }, 5000);
+    </script>
+  </body>
+</html>

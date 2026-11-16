@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+
+# Environment & Secrets
+.env
+
+# Generated Simulation & Cache Artifacts
+exports/
+*.graphml
+*.log
+cache
+
+# Testing & IDE
+.pytest_cache/
+.coverage
+.vscode/
+.idea/
+.DS_Store
